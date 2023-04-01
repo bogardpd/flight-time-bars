@@ -1,3 +1,3 @@
 # Flight Time Bars
 
-Generates time bars from a JSON flight itinerary.
+Generates time bars from an XML flight itinerary.
