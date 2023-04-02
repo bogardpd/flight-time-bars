@@ -17,14 +17,26 @@ class Flight:
     """An individual flight segment taken by a Traveler."""
     def __init__(self, flight_elem) -> None:
         """Generates a Flight from a flight XML element."""
-        orig = flight_elem.find('origin')
-        dest = flight_elem.find('destination')
         self.direction = flight_elem.attrib['direction']
-        self.identifier = flight_elem.find('identifier').text
+
+        ident = flight_elem.find('identifier')
+        self.identifier = (
+            str(ident.attrib['iata']), str(ident.attrib['number']),
+        )
+
+        codeshare_elems = [e for e in flight_elem.iter('codeshare')]
+        self.codeshares = [
+            (str(cse.attrib['iata']), str(cse.attrib['number']))
+            for cse in codeshare_elems
+        ]
+        
+        orig = flight_elem.find('origin')
         self.orig_iata = orig.attrib['iata']
-        self.orig_sched = parse(orig.attrib['scheduled_departure'])
+        self.orig_sched = parse(orig.attrib['departure'])
+        
+        dest = flight_elem.find('destination')
         self.dest_iata = dest.attrib['iata']
-        self.dest_sched = parse(dest.attrib['scheduled_arrival'])
+        self.dest_sched = parse(dest.attrib['arrival'])
 
 
 def create_flight_time_bars(itinerary_file):
@@ -36,6 +48,7 @@ def create_flight_time_bars(itinerary_file):
         flight_table = [[
             flight.direction,
             flight.identifier,
+            flight.codeshares,
             flight.orig_iata,
             flight.orig_sched,
             # flight.orig_sched.astimezone(timezone.utc),
