@@ -9,8 +9,8 @@ class Traveler:
     """A person traveling on a trip."""
     def __init__(self, traveler_elem) -> None:
         """Generates a Traveler from a traveler XML element."""
-        self.name = traveler_elem.find('name').text
-        self.flights = [Flight(elem) for elem in traveler_elem.iter('flight')]
+        self.name = traveler_elem.find('Name').text
+        self.flights = [Flight(elem) for elem in traveler_elem.iter('Flight')]
 
 
 class Flight:
@@ -19,22 +19,22 @@ class Flight:
         """Generates a Flight from a flight XML element."""
         self.direction = flight_elem.attrib['direction']
 
-        ident = flight_elem.find('identifier')
+        ident = flight_elem.find('Identifier')
         self.identifier = (
             str(ident.attrib['iata']), str(ident.attrib['number']),
         )
 
-        codeshare_elems = [e for e in flight_elem.iter('codeshare')]
+        codeshare_elems = [e for e in flight_elem.iter('Codeshare')]
         self.codeshares = [
             (str(cse.attrib['iata']), str(cse.attrib['number']))
             for cse in codeshare_elems
         ]
         
-        orig = flight_elem.find('origin')
+        orig = flight_elem.find('Origin')
         self.orig_iata = orig.attrib['iata']
         self.orig_sched = parse(orig.attrib['departure'])
         
-        dest = flight_elem.find('destination')
+        dest = flight_elem.find('Destination')
         self.dest_iata = dest.attrib['iata']
         self.dest_sched = parse(dest.attrib['arrival'])
 
@@ -42,7 +42,7 @@ class Flight:
 def create_flight_time_bars(itinerary_file):
     tree = ET.parse(itinerary_file)
     itinerary = tree.getroot()
-    travelers = [Traveler(elem) for elem in itinerary.iter('traveler')]
+    travelers = [Traveler(elem) for elem in itinerary.iter('Traveler')]
     for traveler in travelers:
         print(traveler.name)
         flight_table = [[
