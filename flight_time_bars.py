@@ -1,9 +1,11 @@
 """Creates a time bar visualization for multiple travelers' flights."""
 import argparse
-import xml.etree.ElementTree as ET
+from lxml import etree
 from datetime import timezone
 from dateutil.parser import parse
 from tabulate import tabulate
+
+XML_SCHEMA = 'itinerary.xsd'
 
 class Traveler:
     """A person traveling on a trip."""
@@ -40,7 +42,9 @@ class Flight:
 
 
 def create_flight_time_bars(itinerary_file):
-    tree = ET.parse(itinerary_file)
+    tree = etree.parse(itinerary_file)
+    etree.XMLSchema(etree.parse(XML_SCHEMA)).assertValid(tree)
+
     itinerary = tree.getroot()
     travelers = [Traveler(elem) for elem in itinerary.iter('Traveler')]
     for traveler in travelers:
@@ -61,6 +65,6 @@ def create_flight_time_bars(itinerary_file):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("itinerary_file")
+    parser.add_argument('itinerary_file')
     args = parser.parse_args()
     create_flight_time_bars(args.itinerary_file)
